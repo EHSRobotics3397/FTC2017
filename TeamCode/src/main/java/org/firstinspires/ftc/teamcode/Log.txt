@@ -1,0 +1,2 @@
+Dec 2 : We created a new github repository called FTC2017.
+      : Changed the glocal username for git to "Essex Robotics-1"
