@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GameStick;
 
+
 /*
  * Class for Manual Car Drive
  *
@@ -23,6 +24,9 @@ public class OmniDriveAndSpin {
     private GameStick   left;
     private GameStick   right;
     private Gamepad gamepad;
+    private GameButton  bee;
+
+    private boolean iscreeping;
 
     public void setup(DcMotor m1, DcMotor m2, DcMotor m3, DcMotor m4, Gamepad aGamepad)
     {
@@ -32,16 +36,20 @@ public class OmniDriveAndSpin {
         motor3 = m3;
         motor4 = m4;
         gamepad = aGamepad;
+        bee = new GameButton(aGamepad, GameButton.Label.b);
 
         left        = new GameStick(gamepad, GameStick.Label.Left);
         right       = new GameStick(gamepad, GameStick.Label.Right);
         motor1.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
 
+        iscreeping = false;
+
     }
 
     public void update(Telemetry telemetry)
     {
+        bee.Update();
         double sx= right.x();
         double sy=-right.y();
         double mot1steer;
@@ -50,6 +58,9 @@ public class OmniDriveAndSpin {
         double mot4steer;
         final double MINTHRUST = 0.1;
         double thrust = Math.sqrt(sx*sx+sy*sy);
+        boolean creepswitch = bee.Press();
+        final double CREEPFACTOR = 0.4;
+        double creeping = 0;
 
         double direction = directioncalc(sx,sy); // note, -180 to 180
         double directionindegrees = direction *180/ Math.PI;
@@ -158,8 +169,14 @@ public class OmniDriveAndSpin {
             }
         }
 
+        if (creepswitch){
+            iscreeping = !iscreeping;
+        }
 
-
+        if (iscreeping){
+            thrust *= CREEPFACTOR;
+            creeping = 1;
+        }
 
 
         motor1.setPower(thrust * mot1steer);
@@ -167,12 +184,15 @@ public class OmniDriveAndSpin {
         motor3.setPower(thrust * mot3steer);
         motor4.setPower(thrust * mot4steer);
 
+
+        telemetry.addData("Creep: ", String.format("%.2f", creeping));
         telemetry.addData("Power 1: ", String.format("%.2f", mot1steer*thrust));
         telemetry.addData("Power 2: ", String.format("%.2f", mot2steer*thrust));
         telemetry.addData("Power 3: ", String.format("%.2f", mot3steer*thrust));
         telemetry.addData("Power 4: ", String.format("%.2f", mot4steer*thrust));
         telemetry.addData("thrust ", String.format("%.2f", thrust));
         telemetry.addData("octant: ", String.format("%.2f", oct));
+
         //telemetry.addData("steering angle: ", String.format("%.2f", directionindegrees));
 
     }
