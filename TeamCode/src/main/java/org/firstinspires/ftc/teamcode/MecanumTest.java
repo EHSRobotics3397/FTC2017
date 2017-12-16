@@ -39,6 +39,9 @@ public class MecanumTest extends OpMode {
         motor3       = hardwareMap.dcMotor.get("motor3");
         motor4       = hardwareMap.dcMotor.get("motor4");
 
+        motor3.setDirection(DcMotor.Direction.REVERSE);
+        motor4.setDirection(DcMotor.Direction.REVERSE);
+
         buttonA      = new GameButton(gamepad1, GameButton.Label.a);
         buttonB      = new GameButton(gamepad1, GameButton.Label.b);
         buttonX      = new GameButton(gamepad1, GameButton.Label.x);
