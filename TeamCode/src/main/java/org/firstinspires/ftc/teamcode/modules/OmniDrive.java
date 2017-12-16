@@ -36,6 +36,7 @@ public class OmniDrive {
         motor4 = m4;
         gamepad = aGamepad;
 
+
         left        = new GameStick(gamepad, GameStick.Label.Left);
         right       = new GameStick(gamepad, GameStick.Label.Right);
         motor1.setDirection(DcMotor.Direction.REVERSE);
