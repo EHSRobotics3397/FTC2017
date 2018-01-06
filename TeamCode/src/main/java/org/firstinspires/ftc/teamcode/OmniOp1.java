@@ -22,6 +22,8 @@ public class OmniOp1 extends OpMode {
     private DcMotor      motor4;
 
     private OmniDrive omniDrive;
+    //private OmniSpin omniSpin;
+    //private OmniDriveAndSpin omniDriveAndSpin;
     //private MotorTest motorTest;
 
     @Override
@@ -33,14 +35,23 @@ public class OmniOp1 extends OpMode {
         motor4       = hardwareMap.dcMotor.get("motor4");
 
         omniDrive  = new OmniDrive();
-        omniDrive.setup(motor1, motor2, motor3, motor4, gamepad1);
-        //motorTest  = new MotorTest();
-        //motorTest.setup(motor1, motor2, motor3, motor4, gamepad1);
+        omniDrive.init(motor1, motor2, motor3, motor4, gamepad1);
 
+        /*
+        omniSpin  = new OmniSpin();
+        omniSpin.setup(motor1, motor2, motor3, motor4, gamepad1);
+
+        omniDriveAndSpin  = new OmniDriveAndSpin();
+        omniDriveAndSpin.setup(motor1, motor2, motor3, motor4, gamepad1);
+        */
     }
 
     @Override
     public void loop() {
+
         omniDrive.update(telemetry);
+        //omniSpin.update(telemetry);
+        //omniDriveAndSpin.update(telemetry);
+
     }
 }

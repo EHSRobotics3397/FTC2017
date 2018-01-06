@@ -27,7 +27,7 @@ public class OmniDrive {
     private Gamepad gamepad;
     //private
 
-    public void setup(DcMotor m1, DcMotor m2, DcMotor m3, DcMotor m4, Gamepad aGamepad)
+    public void init(DcMotor m1, DcMotor m2, DcMotor m3, DcMotor m4, Gamepad aGamepad)
     {
 
         motor1 = m1;
