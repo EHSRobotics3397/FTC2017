@@ -46,12 +46,12 @@ public class Gripper {
             openGripper();
         else if (b.Press())
             closeGripper();
-        telemetry.addData("Lift",  ": " + gripperStatus);
+        telemetry.addData("Gripper: ", gripperStatus);
 
         servoPosition = gamePad.left_stick_x;
         leftServo.setPosition(servoPosition);
         rightServo.setPosition(-servoPosition);
-        telemetry.addData("Servo ", String.format("%.2f", servoPosition));
+        telemetry.addData("Servo: ", String.format("%.2f", servoPosition));
     }
 
     private void openGripper(){
@@ -65,17 +65,4 @@ public class Gripper {
         rightServo.setPosition(-GRIPPER_CLOSE);
         gripperStatus = "CLOSE";
     }
-
-    /*
-         openPosition = 0.0;
-         closePosition = 0.0;
-         servoPosition = gamepad.stickleft.x;
-         leftServo.setPosition(x);
-         rightServo.setPosition(-x);
-         telementry:  + servoPosition
-     */
-
-
-
-
 }

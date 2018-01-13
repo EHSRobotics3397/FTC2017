@@ -17,6 +17,7 @@ public class MecanumSolver {
     double wheelRadius = 1.0;
 
     public MecanumSolver() {
+        //coordinates for the motor position
         x1= 1; y1=1;
         x2=-1; y2=1;
         x3=-1; y3=-1;
@@ -47,13 +48,11 @@ public class MecanumSolver {
         W = R.times(V.transpose());
         W = W.times(1/wheelRadius);
 
-	double scale = W.maxAbs();
+    	double scale = W.maxAbs(); //can't have abs(motorspeed) > 1.0
         Matrix Wscaled = W;
         if(scale!=0){
             Wscaled.times(1.0/scale);
         }
-
-	
         return Wscaled;
     }
 }

@@ -29,9 +29,6 @@ public class MecanumDrive {
     private int          MOTORCOUNT = 4;
     private double        power[] = new double[MOTORCOUNT];
 
-    private String msg;
-
-
     public void setup(DcMotor m1, DcMotor m2, DcMotor m3, DcMotor m4 , Gamepad aGamepad){
         motor1 = m1;
         motor2 = m2;
@@ -44,10 +41,7 @@ public class MecanumDrive {
         buttonB      = new GameButton(gamepad, GameButton.Label.b);
         buttonX      = new GameButton(gamepad, GameButton.Label.x);
         solver = new MecanumSolver();
-
-        msg = "released";
     }
-
 
     public void update(Telemetry telemetry) {
         buttonA.Update();
@@ -58,10 +52,13 @@ public class MecanumDrive {
         power[2] = 0;
         power[3] = 0;
 
-        yJoyVal = -gamepad.left_stick_y;
+        yJoyVal = gamepad.left_stick_y; //+y is toward the user, -y is push away from user
         xJoyVal = gamepad.left_stick_x;
 
-        Matrix W = solver.solve(yJoyVal, -xJoyVal, 0);
+        //if the trigger buttons are on, then we spin in stead of drive.
+        //to be added.
+
+        Matrix W = solver.solve(-yJoyVal, -xJoyVal, 0);
 
         power[0] = W.element(0,0);
         power[1] = W.element(1,0);
