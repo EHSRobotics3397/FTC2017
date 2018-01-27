@@ -1,68 +1,95 @@
 package org.firstinspires.ftc.teamcode.modules;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-
 /**
- * Created by Willem Hunt on 1/27/2017.
- * Controls the motion of the lift
- * Pass 2 DcMotors, Gamepad
+ *  Gripper - 2 paddle control using servos
+ *  The gripper has multiple positions mapped to buttons and
+ *  manual adjustment using the left joystick on the driver game pad.
  */
 
 public class Gripper {
 
-    private String      gripperStatus;
-    private GameButton  a;
-    private GameButton  b;
     private Gamepad gamePad;
-    private float servoPosition;
-    private Servo   leftServo;
-    private Servo   rightServo;
-    private static final double GRIPPER_HOME = 0.0; //left and right will be different
-    private static final double GRIPPER_OPEN = 1.0;
-    private static final double GRIPPER_CLOSE = 0.0;
+    private GameButton  buttonA;
+    private GameButton  buttonB;
+    private GameButton  buttonX;
+    private GameButton  buttonY;
 
+    private Servo leftServo;
+    private Servo rightServo;
+
+    public static int HOME = 0;
+    public static int OPEN = 1;
+    public static int CLOSE= 2;
+    public static int MANUAL=3;
+
+    private String[] statusName = new String[] {"HOME", "OPEN", "CLOSE", "MANUAL"};
+
+    private double servoPosition;
+    private String gripperStatus;
+    private double[] gripper_stops = new double[]  {0.18, 0.82, 0.95}; //tuned on 1/27/18
+
+    private double moveIncrement = 0.002;
+    double stickDeadZone = 0.08;
+
+    boolean firstUpdate = true;
 
     public void setup(Servo aLeftServo, Servo aRightServo, Gamepad pad){
         rightServo = aRightServo;
         leftServo = aLeftServo;
         gamePad = pad;
-        a = new GameButton(gamePad, GameButton.Label.a);
-        b = new GameButton(gamePad, GameButton.Label.b);
-
-        servoPosition = 0.0f;
+        buttonA = new GameButton(gamePad, GameButton.Label.a);
+        buttonB = new GameButton(gamePad, GameButton.Label.b);
+        buttonX = new GameButton(gamePad, GameButton.Label.x);
+        buttonY = new GameButton(gamePad, GameButton.Label.y);
+        servoPosition = gripper_stops[HOME];
+        positionGripper(servoPosition);
     }
 
     public void update(Telemetry telemetry){
+        buttonA.Update();
+        buttonB.Update();
+        buttonX.Update();
+        buttonY.Update();
 
-        a.Update();
-        b.Update();
+        //button map:
+        // X: OPEN,  Y:HOME  B:CLOSE
 
-        if (a.Press())
-            openGripper();
-        else if (b.Press())
-            closeGripper();
+        if (buttonX.Press()) {
+            servoPosition = gripper_stops[HOME];
+            positionGripper(servoPosition);
+            gripperStatus = statusName[HOME];
+        }
+        else if (buttonY.Press()) {
+            servoPosition = gripper_stops[OPEN];
+            positionGripper(servoPosition);
+            gripperStatus = statusName[OPEN];
+        }
+        else if (buttonB.Press()) {
+            servoPosition = gripper_stops[CLOSE];
+            positionGripper(servoPosition);
+            gripperStatus = statusName[CLOSE];
+        }
+        else {
+            double x = gamePad.left_stick_x;
+            if (Math.abs(x) > stickDeadZone) {
+                servoPosition += moveIncrement * x;
+                positionGripper(servoPosition);
+                gripperStatus = statusName[MANUAL];
+            }
+        }
         telemetry.addData("Gripper: ", gripperStatus);
-
-        servoPosition = gamePad.left_stick_x;
-        leftServo.setPosition(servoPosition);
-        rightServo.setPosition(-servoPosition);
-        telemetry.addData("Servo: ", String.format("%.2f", servoPosition));
+        double servoPositionL = leftServo.getPosition();
+        double servoPositionR = rightServo.getPosition();
+        telemetry.addData("Servo L: ", String.format("%.2f", 1.0-servoPositionL));
+        telemetry.addData("Servo T: ", String.format("%.2f", servoPositionR));
     }
 
-    private void openGripper(){
-        leftServo.setPosition(GRIPPER_OPEN);
-        rightServo.setPosition(-GRIPPER_OPEN);
-        gripperStatus = "OPEN";
-    }
-
-    private void closeGripper(){
-        leftServo.setPosition(GRIPPER_CLOSE);
-        rightServo.setPosition(-GRIPPER_CLOSE);
-        gripperStatus = "CLOSE";
+    private void positionGripper(double index) {
+        leftServo.setPosition(1.0-index); //flipped range (1.0 to 0.0);
+        rightServo.setPosition(index);
     }
 }
