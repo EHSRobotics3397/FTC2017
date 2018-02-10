@@ -25,6 +25,9 @@ public class MecanumDrive {
     private double xJoyVal;
     //int currentButton = 0;
     private Gamepad gamepad;
+    private GameButton   left_Bumper;
+    private GameButton   right_Bumper;
+
 
     private int          MOTORCOUNT = 4;
     private double        power[] = new double[MOTORCOUNT];
@@ -35,11 +38,15 @@ public class MecanumDrive {
         motor3 = m3;
         motor4 = m4;
 
+
+
         gamepad = aGamepad;
 
         buttonA      = new GameButton(gamepad, GameButton.Label.a);
         buttonB      = new GameButton(gamepad, GameButton.Label.b);
         buttonX      = new GameButton(gamepad, GameButton.Label.x);
+        left_Bumper  = new GameButton(gamepad, GameButton.Label.LBumper);
+        right_Bumper  = new GameButton(gamepad, GameButton.Label.RBumper);
         solver = new MecanumSolver();
     }
 
@@ -47,6 +54,12 @@ public class MecanumDrive {
         buttonA.Update();
         buttonB.Update();
         buttonX.Update();
+        left_Bumper.Update();
+        right_Bumper.Update();
+
+        final float MINTRIGGER = 0.01f;
+        float rightTrigg = gamepad.right_trigger;
+        float leftTrigg = gamepad.left_trigger;
         power[0] = 0;
         power[1] = 0;
         power[2] = 0;
@@ -69,6 +82,22 @@ public class MecanumDrive {
         motor2.setPower(power[1]);
         motor3.setPower(power[2]);
         motor4.setPower(power[3]);
+
+        if (rightTrigg > MINTRIGGER)
+        {
+            motor1.setPower(rightTrigg);
+            motor2.setPower(rightTrigg);
+            motor3.setPower(-rightTrigg);
+            motor4.setPower(-rightTrigg);
+        }
+        if (leftTrigg > MINTRIGGER)
+        {
+            motor1.setPower(-leftTrigg);
+            motor2.setPower(-leftTrigg);
+            motor3.setPower(leftTrigg);
+            motor4.setPower(leftTrigg);
+        }
+
 
         //telemetry.addData("Motor#: ", String.format("%d", currentButton));
         /*  telemetry.addData("yJoy: ", String.format("%1.2f", yJoyVal));

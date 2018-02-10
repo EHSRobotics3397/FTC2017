@@ -49,7 +49,7 @@ import java.util.Locale;
  *
  * It assumes the sensor is configured with the name "sensor_color_distance".
  *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Use Android Studio to Copy this Class, and PascSensorte it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
 @Autonomous(name = "Sensor: REVColorDistance", group = "Sensor")
