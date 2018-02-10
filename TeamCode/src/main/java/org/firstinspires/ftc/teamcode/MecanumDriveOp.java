@@ -12,7 +12,8 @@ import org.firstinspires.ftc.teamcode.modules.GameButton;
 import org.firstinspires.ftc.teamcode.modules.MecanumDrive;
 import org.firstinspires.ftc.teamcode.modules.Arm;
 import org.firstinspires.ftc.teamcode.modules.Gripper;
-import org.firstinspires.ftc.teamcode.modules.ColorSensing;
+//import org.firstinspires.ftc.teamcode.modules.ColorSensing;
+import org.firstinspires.ftc.teamcode.modules.RelicExtender;
 
 //import org.firstinspires.ftc.teamcode.modules.LineFollower;
 
@@ -29,13 +30,16 @@ public class MecanumDriveOp extends OpMode {
     private DcMotor      motor3;
     private DcMotor      motor4;
     private DcMotor      motorLift;
-    private ColorSensor sensorColor;
-    private DistanceSensor sensorDistance;
+    private DcMotor      motorAim;
+    private DcMotor      motorExtender;
+    //private ColorSensor sensorColor;
+    //private DistanceSensor sensorDistance;
 
     private Servo        servoLeft;
     private Servo        servoRight;
 
-    private DigitalChannel armLimitSwitch;
+    private DigitalChannel armLimitSwitch1;
+    private DigitalChannel armLimitSwitch2;
 
     private GameButton   buttonA;
     private GameButton   buttonB;
@@ -49,7 +53,8 @@ public class MecanumDriveOp extends OpMode {
     private MecanumDrive driver;
     private Arm liftArm;
     private Gripper gripper;
-    private ColorSensing cSensor;
+    //private ColorSensing cSensor;
+    private RelicExtender relicExt;
     //int currentButton = 0;
 
     private int          MOTORCOUNT = 4;
@@ -61,19 +66,26 @@ public class MecanumDriveOp extends OpMode {
         driver = new MecanumDrive();
         liftArm = new Arm();
         gripper = new Gripper();
-        cSensor = new ColorSensing();
+        //cSensor = new ColorSensing();
+        relicExt = new RelicExtender();
 
         motor1       = hardwareMap.dcMotor.get("motor1");
         motor2       = hardwareMap.dcMotor.get("motor2");
         motor3       = hardwareMap.dcMotor.get("motor3");
         motor4       = hardwareMap.dcMotor.get("motor4");
         motorLift    = hardwareMap.dcMotor.get("motorLift");
+        motorAim       = hardwareMap.dcMotor.get("relicAimMotor");
+        motorExtender       = hardwareMap.dcMotor.get("relicExtendMotor");
+
         servoLeft    = hardwareMap.servo.get("servoLeft");
         servoRight   = hardwareMap.servo.get("servoRight");
-        armLimitSwitch = hardwareMap.digitalChannel.get("armLimitSwitch");
-        armLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
-        sensorColor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "revColorSensor");
-        sensorDistance = hardwareMap.get(DistanceSensor.class, "revColorSensor");
+        armLimitSwitch1 = hardwareMap.digitalChannel.get("armLimitSwitch1");
+        armLimitSwitch1.setMode(DigitalChannel.Mode.INPUT);
+        armLimitSwitch2 = hardwareMap.digitalChannel.get("armLimitSwitch2");
+        armLimitSwitch2.setMode(DigitalChannel.Mode.INPUT);
+
+        //sensorColor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "revColorSensor");
+        //sensorDistance = hardwareMap.get(DistanceSensor.class, "revColorSensor");
 
         motor3.setDirection(DcMotor.Direction.REVERSE);
         motor4.setDirection(DcMotor.Direction.REVERSE);
@@ -84,12 +96,13 @@ public class MecanumDriveOp extends OpMode {
         left_Bumper  = new GameButton(gamepad1, GameButton.Label.LBumper);
         right_Bumper  = new GameButton(gamepad1, GameButton.Label.RBumper);
 
-        motorLift.setDirection(DcMotor.Direction.REVERSE);
+
 
         driver.setup(motor1, motor2, motor3, motor4, gamepad1);
         gripper.setup(servoLeft, servoRight, gamepad2);
-        liftArm.setup(motorLift, armLimitSwitch, gamepad2);
-        cSensor.setup(sensorColor,sensorDistance);
+        liftArm.setup(motorLift, armLimitSwitch1, armLimitSwitch2, gamepad2);
+        //cSensor.setup(sensorColor,sensorDistance);
+        relicExt.setup(motorAim, motorExtender, gamepad2);
     }
 
     @Override
@@ -97,7 +110,7 @@ public class MecanumDriveOp extends OpMode {
         driver.update(telemetry);
         liftArm.update(telemetry);
         gripper.update(telemetry);
-        cSensor.update(telemetry);
-
+        //cSensor.update(telemetry);
+        relicExt.update(telemetry);
     }
 }
