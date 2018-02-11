@@ -21,11 +21,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import java.util.Locale;
+
 @TeleOp(name="IMU Drive", group="Drive")
 //@Disabled
 public class IMU_MonitorOp extends LinearOpMode
 {
     BNO055IMU               imu;
+    Position                globalPosition;
     Orientation             lastAngles = new Orientation();
     double                  globalAngle, correction;
     boolean                 aButton, bButton, touched;
@@ -51,8 +54,10 @@ public class IMU_MonitorOp extends LinearOpMode
         telemetry.addData("Mode", "calibrating...");
         telemetry.update();
 
-        // make sure the imu gyro is calibrated before continuing.
-        while (!isStopRequested() && !imu.isGyroCalibrated())
+        // make sure the imu gyro and accerometer are calibrated before continuing.
+        while   !isStopRequested() &&
+                !imu.isGyroCalibrated() &&
+                !imu.isAccelerometerCalibrated())
         {
             sleep(50);
             idle();
@@ -78,9 +83,12 @@ public class IMU_MonitorOp extends LinearOpMode
         {
             // Use gyro to drive in a straight line.
             UpdateGlobalAngle();
+            UpdateGlobalPosition();            
 
-            telemetry.addData("1 imu heading", lastAngles.firstAngle);
-            telemetry.addData("2 global heading", globalAngle);
+            telemetry.addData("IMU heading", lastAngles.firstAngle);
+            telemetry.addData("Global heading", globalAngle);
+            String sPosition = String.format(Locale.US, "(%d, %d, %d)", globalPosition.x, globalPosition.y, globalPosition.z);
+            telemetry.addData("Position: ", sPosition);            
             telemetry.update();
         }
     }
@@ -116,4 +124,8 @@ public class IMU_MonitorOp extends LinearOpMode
 
         lastAngles = angles;
     }
+
+    private void UpdateGlobalPosition() {
+        globalPosition = imu.getPosition();
+    }    
 }
