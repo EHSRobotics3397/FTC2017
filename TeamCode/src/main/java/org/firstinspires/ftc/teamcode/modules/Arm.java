@@ -37,6 +37,7 @@ public class Arm {
     private State state;
     private String stateName;
     private String armAngle;
+    private String gravityComp;
 
     private static final float HOME_SPEED = 0.2f;
     private final float ENCODERCOUNT_PER_RAD = (float)(Math.PI/12.0);
@@ -44,8 +45,9 @@ public class Arm {
     private final float GEAR_REDUCTION = 3;
     private final double RAD_PER_TICK = 2*Math.PI/(TICKS_PER_REV_NEV60*GEAR_REDUCTION);
 
-    private final float VERTICAL_OFFSET = 2100f;
-    private final float ARM_WEIGHT = 0;
+    private final float VERTICAL_OFFSET = -1680f;
+    private final float K_COMPENSATE = 0.15f;
+
 
     // will need to add the retractSensor.
     public void setup(DcMotor aMotor, DigitalChannel limitSwitch1, DigitalChannel limitSwitch2,Gamepad aGamePad){
@@ -89,14 +91,17 @@ public class Arm {
                 stateName = "Unknown";
                 break;
         }
+        float angle = encoderCountsToAngle(relativeEncoder);
+        armAngle = String.format("%.2f", Math.toDegrees(angle));
 
-        telemetry.addData("Arm position: ", String.format("%d", encoderVal));
+        telemetry.addData("Arm position: ", String.format("%d", relativeEncoder));
         telemetry.addData("Arm state: ", stateName);
         telemetry.addData("Home switch: ", retractSwitchClosed ? "closed" : "open");
         telemetry.addData("Extend switch: ", extendSwitchClosed ? "closed" : "open");
         telemetry.addData("Arm mode: ", creepMode ? "Creepmode" : "Normalmode");
         telemetry.addData("Arm angle: ", armAngle);
         telemetry.addData("liftSTAT: ", liftStatus);
+        telemetry.addData("Gravty come: ", gravityComp);
     }
 
     private void HomingMode() {
@@ -117,12 +122,15 @@ public class Arm {
         if (a.Press()){
             creepMode = !creepMode;
         }
-        float speed = -gamePad.left_stick_y;
-        speed = (float) (0.5*speed);
-        float minSpeed = 0.01f;
-        if (creepMode){
-            speed *= 0.5;
+        float stickDeflection = -gamePad.left_stick_y;
+        //float speed = 0.2f * stickDeflection;
+
+        float speed = 0.0f;
+        if (Math.abs(stickDeflection) > 0.02f) {
+            speed = 0.2f * Math.signum(stickDeflection);
         }
+
+        float minSpeed = 0.01f;
         if (Math.abs(speed) > minSpeed) {
             if (speed > 0)
                 armExtend(-speed);
@@ -154,8 +162,10 @@ public class Arm {
 
     private void armExtend(float speed){
         boolean noSwitch = false; // for testing
+        gravityComp = String.format("%.2f", K_COMPENSATE*Math.sin((double)encoderCountsToAngle(relativeEncoder)));
         if (noSwitch || !extendSwitchClosed)
-            motor.setPower(speed-(ARM_WEIGHT*encoderCountsToAngle(relativeEncoder)));
+            //motor.setPower(speed+(ARM_WEIGHT*encoderCountsToAngle(relativeEncoder)));
+            motor.setPower(speed-(K_COMPENSATE*Math.sin((double)encoderCountsToAngle(relativeEncoder))));
         else
             motor.setPower(0.0);
         liftStatus = "Extend";
@@ -164,8 +174,10 @@ public class Arm {
     private void armRetract(float speed){
         //swithch is on Rev controller 2, port D01
         boolean noSwitch = false; // for testing
+        gravityComp = String.format("%.2f", K_COMPENSATE*Math.sin((double)encoderCountsToAngle(relativeEncoder)));
         if (noSwitch || !retractSwitchClosed)
-            motor.setPower(-speed-(ARM_WEIGHT*encoderCountsToAngle(relativeEncoder)));
+            //motor.setPower(-speed+(ARM_WEIGHT*encoderCountsToAngle(relativeEncoder)));
+            motor.setPower(-speed-(K_COMPENSATE*Math.sin((double)encoderCountsToAngle(relativeEncoder))));
         else
             motor.setPower(0.0); // when not testing this needs to be 0.0
         liftStatus = "Retract";
@@ -173,7 +185,7 @@ public class Arm {
 
     private float encoderCountsToAngle(int encoderpos){
         float angle = (float) (((encoderpos-VERTICAL_OFFSET)*RAD_PER_TICK));
-        armAngle = String.format("%.2f", Math.toDegrees(angle));
+
         return angle;
     }
 }
