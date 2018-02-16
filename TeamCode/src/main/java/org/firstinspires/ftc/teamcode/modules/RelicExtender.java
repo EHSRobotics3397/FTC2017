@@ -15,7 +15,7 @@ public class RelicExtender {
     private GameButton  whyy;
     private DcMotor 	aimMotor;
     private DcMotor 	extendMotor;
-    private GameStick   right;
+    private GameStick leftStick;
 
     public void setup(DcMotor aimM, DcMotor extM, Gamepad aGamepad)
     {
@@ -27,7 +27,7 @@ public class RelicExtender {
         gamepad = aGamepad;
         exx = new GameButton(aGamepad, GameButton.Label.x);
         whyy = new GameButton(aGamepad, GameButton.Label.y);
-        right = new GameStick(gamepad, GameStick.Label.Right);
+        leftStick = new GameStick(gamepad, GameStick.Label.Left);
 
     }
 
@@ -38,7 +38,7 @@ public class RelicExtender {
         float aimThrust = 0;
         float extendThrust = 0;
         final float MINTRIGGER = 0.01f;
-        float sy =-right.y();
+        float sy =-leftStick.y();
         final float MINJOY = 0.1f;
         final float THRUSTFACTOR = 0.6f;
 

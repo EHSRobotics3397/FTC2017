@@ -39,7 +39,7 @@ public class Arm {
     private String armAngle;
     private String gravityComp;
 
-    private static final float HOME_SPEED = 0.2f;
+    private static final float HOME_SPEED = 0.15f;
     private final float ENCODERCOUNT_PER_RAD = (float)(Math.PI/12.0);
     private final double TICKS_PER_REV_NEV60 = 1680.0;
     private final float GEAR_REDUCTION = 3;
@@ -62,8 +62,12 @@ public class Arm {
         y = new GameButton(gamePad, GameButton.Label.y);
         x = new GameButton(gamePad, GameButton.Label.x);
         a = new GameButton(gamePad, GameButton.Label.a);
-        state = State.MANUAL; // set this to homing wehn we need to use it. this is just for testing as of now
+        SetState(State.MANUAL); // set this to homing wehn we need to use it. this is just for testing as of now
         creepMode = false;
+    }
+
+    public void SetState(State newState) {
+        state = newState;
     }
 
     public void update(Telemetry telemetry){
@@ -107,11 +111,15 @@ public class Arm {
     private void HomingMode() {
         if (retractSwitchClosed) {
             armIdle();
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            state = State.MANUAL;
+            SetState(State.MANUAL);
         }
         else {
-            armRetract(HOME_SPEED);
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor.setPower(HOME_SPEED);
         }
     }
 
@@ -122,7 +130,7 @@ public class Arm {
         if (a.Press()){
             creepMode = !creepMode;
         }
-        float stickDeflection = -gamePad.left_stick_y;
+        float stickDeflection = -gamePad.right_stick_y;
         //float speed = 0.2f * stickDeflection;
 
         float speed = 0.0f;
