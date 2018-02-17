@@ -55,7 +55,7 @@ public class IMU_MonitorOp extends LinearOpMode
         telemetry.update();
 
         // make sure the imu gyro and accerometer are calibrated before continuing.
-        while   !isStopRequested() &&
+        while(   !isStopRequested() &&
                 !imu.isGyroCalibrated() &&
                 !imu.isAccelerometerCalibrated())
         {

@@ -46,7 +46,7 @@ public class Arm {
     private final double RAD_PER_TICK = 2*Math.PI/(TICKS_PER_REV_NEV60*GEAR_REDUCTION);
 
     private final float VERTICAL_OFFSET = -1680f;
-    private final float K_COMPENSATE = 0.15f;
+    private final float K_COMPENSATE = 0.19f;
 
 
     // will need to add the retractSensor.
@@ -135,7 +135,7 @@ public class Arm {
 
         float speed = 0.0f;
         if (Math.abs(stickDeflection) > 0.02f) {
-            speed = 0.2f * Math.signum(stickDeflection);
+            speed = 0.24f * Math.signum(stickDeflection);
         }
 
         float minSpeed = 0.01f;

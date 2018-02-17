@@ -16,10 +16,7 @@ import org.firstinspires.ftc.teamcode.modules.Gripper;
 
 //import org.firstinspires.ftc.teamcode.modules.LineFollower;
 
-/**
- * Created by greenteam on 1/12/17.
- * Main Drive Opmode
- * */
+
 
 @TeleOp(name = "PreGameSetUpOp", group = "Drive")
 public class PreGameSetUpOp extends OpMode {
@@ -57,7 +54,7 @@ public class PreGameSetUpOp extends OpMode {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
-            ;
+
         }
         liftArm.SetState(Arm.State.HOMING);
     }

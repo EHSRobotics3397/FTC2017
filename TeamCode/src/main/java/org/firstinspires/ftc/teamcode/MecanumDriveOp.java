@@ -38,6 +38,7 @@ public class MecanumDriveOp extends OpMode {
     private Servo        servoLeft;
     private Servo        servoRight;
 
+
     private DigitalChannel armLimitSwitch1;
     private DigitalChannel armLimitSwitch2;
 
@@ -68,6 +69,7 @@ public class MecanumDriveOp extends OpMode {
         gripper = new Gripper();
         //cSensor = new ColorSensing();
         relicExt = new RelicExtender();
+
 
         motor1       = hardwareMap.dcMotor.get("motor1");
         motor2       = hardwareMap.dcMotor.get("motor2");

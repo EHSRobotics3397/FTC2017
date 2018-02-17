@@ -30,7 +30,7 @@ public class Gripper {
 
     private double servoPosition;
     private String gripperStatus;
-    private double[] gripper_stops = new double[]  {0.08, 0.82, 0.95}; //tuned on 1/27/18
+    private double[] gripper_stops = new double[]  {0.17, 0.82, 0.95}; //tuned on 1/27/18
 
     private double moveIncrement = 0.002;
     double stickDeadZone = 0.08;
