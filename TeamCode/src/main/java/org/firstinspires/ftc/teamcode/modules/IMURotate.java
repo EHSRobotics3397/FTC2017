@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import java.lang.Thread;
+import java.util.Locale;
 
 /**
  * Created by greenteam on 2/17/18.
@@ -29,17 +30,52 @@ public class IMURotate {
     double                  globalAngle, correction;
     boolean                 aButton, bButton, touched;
 
-    public void setup(Servo aRightServo, Gamepad pad){
+    public void setup(BNO055IMU anImu, Telemetry telemetry){
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+
+        telemetry.update();
+
+        imu.initialize(parameters);
+
+        // make sure the imu gyro and accerometer are calibrated before continuing.
+        while(  !imu.isGyroCalibrated() &&
+                !imu.isAccelerometerCalibrated())
+        {
+            try {
+                Thread.sleep(50);
+                Thread.yield();
+            }
+            catch (InterruptedException e) {}
+
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+        telemetry.update();
     }
 
-    public double currentAngle(){
-        
-        return 0.0;
+    public double getAngle(){
+        return globalAngle;
     }
 
-    public void update(Telemetry telemetry) throws InterruptedException {
+    public void update(Telemetry telemetry) {
+        UpdateGlobalAngle();
+        UpdateGlobalPosition();
 
+        telemetry.addData("IMU heading", lastAngles.firstAngle);
+        telemetry.addData("Global heading", globalAngle);
+        String sPosition = String.format(Locale.US, "(%d, %d, %d)", globalPosition.x, globalPosition.y, globalPosition.z);
+        telemetry.addData("Position: ", sPosition);
+        telemetry.update();
     }
 
     /**
