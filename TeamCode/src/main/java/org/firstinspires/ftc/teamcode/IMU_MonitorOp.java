@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import java.util.Locale;
 
-@TeleOp(name="IMU Drive", group="Drive")
+@TeleOp(name="IMU Drive2", group="Drive")
 //@Disabled
 public class IMU_MonitorOp extends LinearOpMode
 {
@@ -88,7 +88,7 @@ public class IMU_MonitorOp extends LinearOpMode
 
             telemetry.addData("IMU heading", lastAngles.firstAngle);
             telemetry.addData("Global heading", globalAngle);
-            String sPosition = String.format(Locale.US, "(%d, %d, %d)", globalPosition.x, globalPosition.y, globalPosition.z);
+            String sPosition = String.format(Locale.US, "(%3.2f, %3.2f, %3.2f)", globalPosition.x, globalPosition.y, globalPosition.z);
             telemetry.addData("Position: ", sPosition);            
             telemetry.update();
         }

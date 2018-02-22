@@ -45,22 +45,45 @@ public class MecanumAutoDrive {
         motor4 = m4;
 
         solver = new MecanumSolver();
+
+        ChangeState(State.IDLE);
     }
 
 
 
     public void update(Telemetry telemetry, float imuDirection) {
+        targetPower = 0; // for testing
+
+        power[0] = 0;
+        power[1] = 0;
+        power[2] = 0;
+        power[3] = 0;
+
         currentAngle = imuDirection;
-        if (state == State.IDLE)
+        if (state == State.IDLE){
             RunIdle();
-        else if (state == State.DRIVING)
+            stateName = "IDLE";
+        }
+        else if (state == State.DRIVING){
             RunDrive();
-        else if (state == State.TURNING)
+            stateName = "DRIVING";
+        }
+        else if (state == State.TURNING){
             RunTurn();
+            stateName = "TURNING";
+        }
         else if (state == State.FAILED) {
             StopMotors();
+            stateName = "FAILED";
         }
 
+        motor1.setPower(power[0]);
+        motor2.setPower(power[1]);
+        motor3.setPower(power[2]);
+        motor4.setPower(power[3]);
+
+
+        telemetry.addData("Driver State:", stateName);
     }
 
 
@@ -72,12 +95,9 @@ public class MecanumAutoDrive {
         return failReason;
     }
 
-    private void Display() {
-        telemetry.addData("State:", stateName);
-    }
-
     private void ChangeState(State newState) {
         state       = newState;
+
         startTime   = System.currentTimeMillis();
     }
 
@@ -92,16 +112,17 @@ public class MecanumAutoDrive {
     }
 
     public void Drive(float duration, float power) {
-        targetTime = duration;
+        targetTime = duration * 1000; //changes from sec to millsec
         targetPower = power;
         ChangeState(State.DRIVING);
     }
 
-    public void Turn(float angle, float power) { // negitive angle if you want to turn the other direction\
+    public void Turn(float duration, float power) { // negitive angle if you want to turn the other direction\
         startAngle = currentAngle;
-        targetAngleDiff = angle;
+        //targetAngleDiff = angle; // change to time
+        targetTime = duration * 1000;
         targetPower = power;
-        ChangeState(State.DRIVING);
+        ChangeState(State.TURNING);
     }
 
     //============================  state methods
@@ -113,26 +134,48 @@ public class MecanumAutoDrive {
         if (System.currentTimeMillis() - startTime > targetTime)
             ChangeState(State.COMPLETED);
         else {
+            power[0] = targetPower;
+            power[1] = targetPower;
+            power[2] = targetPower;
+            power[3] = targetPower;
             //set the motor power
         }
 
     }
 
     private void RunTurn() {
+        float angleTraveled = WrapOneEighty(currentAngle - startAngle);
         float epsilon = 5.0f;
         //this need more work.
         //360degree problem
-        if ((Math.abs(currentAngle - startAngle) - targetAngleDiff) < epsilon)
+
+        //if ((Math.abs(currentAngle - startAngle) - targetAngleDiff) < epsilon)
+        if (System.currentTimeMillis() - startTime > targetTime)
             ChangeState(State.COMPLETED);
         else {
+
+            power[0] = -targetPower;
+            power[1] = -targetPower;
+            power[2] = targetPower;
+            power[3] = targetPower;
             // if(targetAngle-currentAngle < 0.0) : motors in one direct
             // else motors in other direction.
             //set the motor power
         }
     }
 
+    private float WrapOneEighty (float currentAng){
+        if (currentAng > 180){
+            currentAng -= 360;
+        }
+        if (currentAng < -180){
+            currentAng += 360;
+        }
+        return currentAng;
+    }
+
     private void StopMotors() {
-        //nada
+        targetPower = 0;
     }
 
 

@@ -31,6 +31,8 @@ public class IMURotate {
     boolean                 aButton, bButton, touched;
 
     public void setup(BNO055IMU anImu, Telemetry telemetry){
+        imu = anImu;
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
         parameters.mode                = BNO055IMU.SensorMode.IMU;
@@ -71,11 +73,14 @@ public class IMURotate {
         UpdateGlobalAngle();
         UpdateGlobalPosition();
 
+        /*
+
+
         telemetry.addData("IMU heading", lastAngles.firstAngle);
         telemetry.addData("Global heading", globalAngle);
-        String sPosition = String.format(Locale.US, "(%d, %d, %d)", globalPosition.x, globalPosition.y, globalPosition.z);
+        String sPosition = String.format(Locale.US, "(%3.2f, %3.2f, %3.2f)", globalPosition.x, globalPosition.y, globalPosition.z);
         telemetry.addData("Position: ", sPosition);
-        telemetry.update();
+        */
     }
 
     /**
